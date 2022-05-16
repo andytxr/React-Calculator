@@ -1,10 +1,22 @@
-import React, {Component} from "react";
+import React, {Component, useState} from "react";
 
 import Button from "../components/Button";
 import './Calculator.css'
 import Display from "../components/Display";
 
+let initialState = {
+
+    displayValue: '0',
+    clearDisplay: 'false',
+    operation: 'null',
+    values: [0, 0],
+    current: 0
+
+}
+
 export default class Calculator extends Component{
+
+    state={...initialState}
 
     constructor(props){
 
@@ -18,7 +30,7 @@ export default class Calculator extends Component{
 
     clearMemory(){
 
-        console.log('Cleaning the Memory');
+        this.setState({...initialState})
 
     }
 
@@ -30,7 +42,35 @@ export default class Calculator extends Component{
 
     addDigit(digit){
 
-        console.log('Choosed digit', digit)
+        if(digit === '.' && this.state.displayValue.includes('.')){
+
+            return
+        }
+
+        let clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay
+        let currentValue = clearDisplay ? '' : this.state.displayValue
+        let displayValue = currentValue + digit;
+        this.setState({
+            
+            displayValue, 
+            clearDisplay: false
+
+        })
+
+        if(digit !== '.'){
+
+            let i = this.state.current;
+            let newValue = parseFloat(displayValue);
+
+            let values = [...this.state.values];
+            values[i] = newValue;
+            this.setState({
+
+                values
+
+            });
+
+        }
 
     }
 
@@ -40,7 +80,7 @@ export default class Calculator extends Component{
 
             <div className="calculator">
                 
-                <Display value={100}></Display>
+                <Display value={this.state.displayValue}></Display>
                 <Button label="AC" click={this.clearMemory} triple></Button>
                 <Button label="/" click={this.setOperation} operation></Button>
                 <Button label="7" click={this.addDigit}></Button>
