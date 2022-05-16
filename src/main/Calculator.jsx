@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {Component} from "react";
 
 import Button from "../components/Button";
 import './Calculator.css'
@@ -7,8 +7,8 @@ import Display from "../components/Display";
 let initialState = {
 
     displayValue: '0',
-    clearDisplay: 'false',
-    operation: 'null',
+    clearDisplay: false,
+    operation: null,
     values: [0, 0],
     current: 0
 
@@ -36,7 +36,46 @@ export default class Calculator extends Component{
 
     setOperation(operation){
 
-        console.log('Choosed operation' , operation);
+        if(this.state.current===0){
+
+            this.setState({
+
+                operation, 
+                current: 1,
+                clearDisplay: true
+
+            })
+
+        }else{
+
+            let equals = operation === '=' ;
+            let currentOp = this.state.operation;
+
+
+            let values = [...this.state.values];
+            try{
+
+                values[0] = eval(`${values[0]} ${currentOp} ${values[1]}`);
+
+            }catch(e){
+
+                values[0] = this.state.values[0];
+
+            }
+
+            values[1] = 0;
+
+            this.setState({
+
+                displayValue: values[0],
+                operation: equals ? null : operation,
+                current: equals ? 0 : 1,
+                clearDisplay: !equals,
+                values
+
+            })
+
+        }
 
     }
 
@@ -50,6 +89,7 @@ export default class Calculator extends Component{
         let clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay
         let currentValue = clearDisplay ? '' : this.state.displayValue
         let displayValue = currentValue + digit;
+
         this.setState({
             
             displayValue, 
